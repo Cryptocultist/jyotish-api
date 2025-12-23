@@ -544,6 +544,3 @@ This project is licensed under the GNU License V3 - see the LICENSE file for det
 
 The Jyotish library used in this project is licensed under the GNU General Public License version 2 or later. See the [Jyotish LICENSE](https://github.com/kunjara/jyotish/blob/master/LICENSE) for more details.
 
-## Contact
-
-For any inquiries, questions, or support, please contact [on Telegram](http://t.me/teal33t).
