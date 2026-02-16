@@ -1,9 +1,8 @@
 [build]
-# Set root directory to "api" in Railway dashboard Settings > Build
-# Railway will auto-detect the Dockerfile in that directory
+# Root directory set to "api" in Railway dashboard Settings > Build
 
 [deploy]
 healthcheckPath = "/api/ping"
-healthcheckTimeout = 30
+healthcheckTimeout = 120
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3

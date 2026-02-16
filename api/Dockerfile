@@ -96,9 +96,12 @@ RUN php bin/console assets:install --symlink
 # Clear Symfony cache
 RUN php bin/console cache:clear
 
+# Copy startup script
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
 # Expose port 9393
 EXPOSE 9393
 
-# Start PHP-FPM and Nginx
-CMD service php7.4-fpm start && \
-    nginx -g 'daemon off;'
+# Start PHP-FPM and Nginx via startup script
+CMD ["/start.sh"]
