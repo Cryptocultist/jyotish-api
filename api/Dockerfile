@@ -76,13 +76,17 @@ RUN mkdir -p /var/www/api/var/cache /var/www/api/var/log && \
 RUN set -eux; \
     composer dump-autoload --optimize;
 
-# Set proper permissions
+# Compile Swiss Ephemeris (required for Jyotish calculations)
+RUN cd swetest/src && make clean && make && \
+    chmod 755 /var/www/api/swetest/src && chmod +x /var/www/api/swetest/src/swetest
 
+# Railway injects PORT env var; default to 9393 for local dev
+ENV PORT=9393
 
-# Configure Nginx
+# Configure Nginx with PORT substitution at startup
 RUN echo ' \
 server { \
-    listen 9393; \
+    listen NGINX_PORT; \
     root /var/www/api/public; \
     index index.php index.html index.htm; \
     server_name _; \
@@ -100,7 +104,7 @@ server { \
         include fastcgi_params; \
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name; \
     } \
-}' > /etc/nginx/sites-available/default
+}' > /etc/nginx/sites-available/default.template
 
 # Configure PHP-FPM logging
 RUN sed -i 's/;error_log = php_errors.log/error_log = \/var\/log\/php7.4-fpm.log/' /etc/php/7.4/fpm/php-fpm.conf
@@ -115,10 +119,10 @@ RUN php bin/console assets:install --symlink
 # Clear Symfony cache
 RUN php bin/console cache:clear
 
-# Expose port
+# Expose port (Railway will override via PORT env var)
 EXPOSE 9393
 
-# Start Nginx and PHP-FPM with logging
-CMD service php7.4-fpm start && \
-    tail -f /var/log/nginx/error.log /var/log/nginx/access.log /var/log/php7.4-fpm.log & \
+# Start: substitute PORT into nginx config, then launch PHP-FPM + Nginx
+CMD sed "s/NGINX_PORT/$PORT/g" /etc/nginx/sites-available/default.template > /etc/nginx/sites-available/default && \
+    service php7.4-fpm start && \
     nginx -g 'daemon off;'
