@@ -2,7 +2,5 @@
 # Root directory set to "api" in Railway dashboard Settings > Build
 
 [deploy]
-healthcheckPath = "/api/ping"
-healthcheckTimeout = 120
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3

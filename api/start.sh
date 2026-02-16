@@ -3,6 +3,14 @@ set -e
 
 echo "=== Starting Jyotish API ==="
 
+# Use Railway's PORT env var, fallback to 9393
+LISTEN_PORT=${PORT:-9393}
+echo "Configured to listen on port $LISTEN_PORT"
+
+# Update nginx config to use the correct port
+sed -i "s/listen 9393/listen $LISTEN_PORT/" /etc/nginx/sites-available/default
+echo "Nginx config updated for port $LISTEN_PORT"
+
 # Ensure PHP-FPM socket directory exists
 mkdir -p /run/php
 echo "Created /run/php directory"
@@ -31,6 +39,6 @@ if [ ! -S /run/php/php7.4-fpm.sock ]; then
     exit 1
 fi
 
-echo "Starting nginx on port 9393..."
+echo "Starting nginx on port $LISTEN_PORT..."
 # Start nginx in foreground (keeps container alive)
 nginx -g 'daemon off;'
